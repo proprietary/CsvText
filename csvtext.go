@@ -2,6 +2,8 @@ package csvtext
 
 import (
 	"bytes"
+	"database/sql/driver"
+	"fmt"
 	"strings"
 )
 
@@ -36,4 +38,17 @@ func (c *CsvText) SetArr(src []string) *CsvText {
 	}
 	c.Csv = b.String()
 	return c
+}
+
+func (c *CsvText) Value() (driver.Value, error) {
+	return c.Csv, nil
+}
+
+func (c *CsvText) Scan(src interface{}) error {
+	s, ok := src.(string)
+	if !ok {
+		return fmt.Errorf("CsvText must be able to scan this as a string!")
+	}
+	c = c.SetCsv(s)
+	return nil
 }
